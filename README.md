@@ -2,6 +2,8 @@
 
 Welcome to Cybersecurity Sociey Sydney's Git Workshop!
 
+Free food and Redbulls!
+
 What we're covering today:
 
 - What is git?
