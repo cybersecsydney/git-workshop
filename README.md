@@ -2,7 +2,7 @@
 
 Welcome to Cybersecurity Sociey Sydney's Git Workshop!
 
-Free food and NO DRINKS!
+Free food and Redbulls!
 
 What we're covering today:
 
