@@ -1,0 +1,553 @@
+\documentclass[aspectratio=169]{beamer}
+%Information to be included in the title page:
+%CREDIT PRO GIT
+\title{Git Workshop}
+\author{Noah Hallows}
+\institute{Cybersecurity Society Sydney}
+\date{2026 Semester 2}
+\logo{\includegraphics[height=0.5cm]{css_logo}}
+
+\makeatletter
+\def\input@path{{usyd-beamer-theme/}}
+\makeatother
+
+
+\usetheme{usyd}
+\graphicspath{{usyd-beamer-theme/}}
+\usecolortheme{default}
+
+% Set the logo to your new image file
+\logo{css_logo}
+
+% Override the primary theme color to match the logo's purple/blue
+\definecolor{usydred}{RGB}{98, 48, 248}
+
+% Color definitions matching the original diagram
+\definecolor{untrackedbg}{HTML}{F2F0E6}
+\definecolor{untrackedtext}{HTML}{000000}
+\definecolor{unmodifiedbg}{HTML}{368B98}
+\definecolor{modifiedbg}{HTML}{D89B28}
+\definecolor{stagedbg}{HTML}{E63B2B}
+\definecolor{arrowbg}{HTML}{8B8178}
+\definecolor{linegray}{HTML}{A0A0A0}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{varwidth}
+\lstset{
+  language=bash,
+  basicstyle=\ttfamily,
+}
+
+\usetikzlibrary{arrows.meta, positioning}
+
+% Color definitions matching the Pro Git visual style
+\definecolor{commitbg}{HTML}{F2F0E6}
+\definecolor{branchbg}{HTML}{E84125}
+\definecolor{arrowgray}{HTML}{8C857B}
+\definecolor{commitbg}{HTML}{F2F0E6}
+\definecolor{committext}{HTML}{5C564E}
+\definecolor{treebg}{HTML}{368B98}
+\definecolor{blobbg}{HTML}{D89B28}
+\definecolor{lighttext}{HTML}{EAE6DF}
+\definecolor{arrowgray}{HTML}{8C857B}
+
+\newtcblisting{codebox}[1][]{%
+  hbox,
+  size=tight,
+  colback=lightgray,
+  colframe=gray,
+  arc=3pt,
+  outer arc=3pt,
+  boxrule=0.1pt,
+  listing only,
+  listing options={language=bash, basicstyle=\ttfamily\footnotesize, #1} % Allows passing optional parameters
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{What is Git?}
+    Git is a \textit{Distributed Version Control System} created in 2002 by Linus Torvalds to manage the Linux Kernel. \\
+    \pause
+    \begin{itemize}
+        \item A version control system stores the files and folders with a log of their changes. This is called a repository (repo for short).\pause \\
+        \item A distributed version control system gives each client a complete copy of this database and files. \\
+    \end{itemize}
+    \pause 
+    Unlike systems like Google Docs, Git only stores the state of the repository at specific points called \textbf{commits}. \\
+    \pause
+    When a commit is created Git takes a snapshot of the repository at that point and refers to it using a sha1 hash. 
+\end{frame}
+
+\begin{frame}
+    \frametitle{What is a commit?}
+    \resizebox{10cm}{!}{%
+\begin{tikzpicture}[
+  font=\ttfamily\tiny,
+  >=Stealth,
+  box/.style={
+    draw=none,
+    inner sep=4pt,
+    align=left,
+    minimum width=2.6cm,
+    minimum height=1.4cm
+  }
+]
+
+  % --- Commit Node (Left) ---
+  \node[box, fill=commitbg, text=committext] (commit) {
+    \hspace*{0.8em}\underline{\textbf{commit}} size\\[1pt]
+    \hspace*{0.8em}tree 92ec2\\
+    \hspace*{0.4em}author Noah\\
+    committer Noah\\[3pt]
+    {\tiny The initial commit}
+  };
+  \node[above=1pt of commit, font=\ttfamily\tiny, text=black] {98ca9};
+
+  % --- Tree Node (Center) ---
+  \node[box, fill=treebg, text=lighttext, right=0.5cm of commit] (tree) {
+    \hspace*{0.2em}\underline{\textbf{tree}} size\\[1pt]
+    \textbf{blob} 5b1d3 README\\
+    \textbf{blob} 911e7 LICENSE\\
+    \textbf{blob} cba0a test.rb
+  };
+  \node[above=1pt of tree, font=\ttfamily\tiny, text=black] {92ec2};
+
+  % --- Blob Nodes (Right) ---
+  % Top Blob (5b1d3)
+  \node[box, fill=blobbg, text=lighttext, right=0.5cm of tree, yshift=2cm] (blob1) {
+    \hspace*{2.2em}\underline{\textbf{blob}} size\\[3pt]
+    {\fontsize{4}{5}\selectfont == Testing library}\\[2pt]
+    {\fontsize{4}{5}\selectfont This library is used to}\\
+    {\fontsize{4}{5}\selectfont Ruby projects.}
+  };
+  \node[above=1pt of blob1, font=\ttfamily\tiny, text=black] {5b1d3};
+
+  % Middle Blob (911e7)
+  \node[box, fill=blobbg, text=lighttext, right=0.5cm of tree, yshift=0cm] (blob2) {
+    \hspace*{2.2em}\underline{\textbf{blob}} size\\[3pt]
+    {\fontsize{4}{5}\selectfont The MIT License}\\[2pt]
+    {\fontsize{4}{5}\selectfont Copyright (c) 2026 Noah}\\
+    {\fontsize{4}{5}\selectfont Permission is hereby granted}\\
+    {\fontsize{4}{5}\selectfont free of charge, to any}
+  };
+  \node[above=1pt of blob2, font=\ttfamily\tiny, text=black] {911e7};
+
+  % Bottom Blob (cba0a)
+  \node[box, fill=blobbg, text=lighttext, right=0.5cm of tree, yshift=-2cm] (blob3) {
+    \hspace*{2.2em}\underline{\textbf{blob}} size\\[3pt]
+    {\fontsize{4}{5}\selectfont require 'logger'}\\
+    {\fontsize{4}{5}\selectfont require 'test/unit'}\\[3pt]
+    {\fontsize{4}{5}\selectfont class Test::Unit::Test}
+  };
+  \node[above=1pt of blob3, font=\ttfamily\tiny, text=black] {cba0a};
+
+  % --- Arrows ---
+  \draw[->, line width=0.8pt, arrowgray] (commit) -- (tree);
+  \draw[->, line width=0.8pt, arrowgray] (tree) -- (blob1);
+  \draw[->, line width=0.8pt, arrowgray] (tree) -- (blob2);
+  \draw[->, line width=0.8pt, arrowgray] (tree) -- (blob3);
+
+\end{tikzpicture}%
+}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Creating a repository}
+    We create a repository using
+    \begin{codebox}
+      git init
+    \end{codebox}
+    \pause
+    This creates a hidden folder called ``\textit{.git}'' which stores the internal git files \\
+    \pause
+    To ``clone'' an repository from a remote server we can use
+    \begin{codebox}
+        git clone https://github.com/cybersecsydney/git-workshop.git
+    \end{codebox}
+    \pause
+    This gives us a complete local copy of the repository, including the full history \\
+    We can also clone using the ssh protocol instead of https
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Git identity}
+        Before we can commit anything we need to tell Git who we are. 
+        \pause
+        \begin{codebox}
+        git config user.name "Noah"
+git config user.email "noah@quackmail.com.au"
+        \end{codebox}
+        If we don't want to repeat this for each repository we can add the '\texttt{--global}' flag. \\
+        \pause
+        We can view the repository or global config using 
+        \begin{codebox}
+            git config --edit --global
+        \end{codebox}
+        This can be used to store authentication tokens. 
+    
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Files}
+    Files in a Git repository can be in one of several states. 
+    \pause
+    \begin{itemize}
+        \item Untracked \pause
+        \item Unmodified \pause
+        \item Modified \pause
+        \item Staged \pause
+    \end{itemize}
+    When we first create a file it is untracked \\
+    Before we can commit a file we need to \textit{stage} it for next commit by adding it to the \textit{staging area}
+    \begin{codebox}
+        git add filename.txt
+    \end{codebox}
+    \pause
+    ``git add'' can be thought of as the ``add this to the next commit'' command. \\
+    \pause
+    \begin{block}{Warning}
+        Don't commit environment files
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{File areas}
+    \begin{tikzpicture}[font=\ttfamily]
+
+        % Column positions (X coordinates)
+        \def\xA{0}
+        \def\xB{3.3}
+        \def\xC{6.1}
+        \def\xD{9}
+
+        % Header boxes
+        \node[fill=untrackedbg, text=untrackedtext, minimum height=0.85cm, inner xsep=10pt] at (\xA, 0) {Untracked};
+        \node[fill=unmodifiedbg, text=white, minimum height=0.85cm, inner xsep=10pt] at (\xB, 0) {Unmodified};
+        \node[fill=modifiedbg, text=white, minimum height=0.85cm, inner xsep=10pt] at (\xC, 0) {Modified};
+        \node[fill=stagedbg, text=white, minimum height=0.85cm, inner xsep=10pt] at (\xD, 0) {Staged};
+
+        % Vertical guidelines
+        \draw[linegray, thick] (\xA, -0.425) -- (\xA, -5.8);
+        \draw[linegray, thick] (\xB, -0.425) -- (\xB, -5.8);
+        \draw[linegray, thick] (\xC, -0.425) -- (\xC, -5.8);
+        \draw[linegray, thick] (\xD, -0.425) -- (\xD, -5.8);
+
+        % 1. Add the file (Untracked -> Staged)
+        \draw[fill=arrowbg, draw=none] 
+            (\xA, -1.1 + 0.275) -- (\xD - 0.7, -1.1 + 0.275) -- (\xD - 0.7, -1.1 + 0.425) -- 
+            (\xD, -1.1) -- 
+            (\xD - 0.7, -1.1 - 0.425) -- (\xD - 0.7, -1.1 - 0.275) -- (\xA, -1.1 - 0.275) -- cycle;
+        \node[text=white, anchor=west] at (\xA, -1.1) {\small Add the file};
+
+        % 2. Edit the file (Unmodified -> Modified)
+        \draw[fill=arrowbg, draw=none] 
+            (\xB, -2.1 + 0.275) -- (\xC - 0.7, -2.1 + 0.275) -- (\xC - 0.7, -2.1 + 0.425) -- 
+            (\xC, -2.1) -- 
+            (\xC - 0.7, -2.1 - 0.425) -- (\xC - 0.7, -2.1 - 0.275) -- (\xB, -2.1 - 0.275) -- cycle;
+        \node[text=white, anchor=west] at (\xB, -2.1) {\small Edit the file};
+
+        % 3. Stage the file (Modified -> Staged)
+        \draw[fill=arrowbg, draw=none] 
+            (\xC, -3.1 + 0.275) -- (\xD - 0.7, -3.1 + 0.275) -- (\xD - 0.7, -3.1 + 0.425) -- 
+            (\xD, -3.1) -- 
+            (\xD - 0.7, -3.1 - 0.425) -- (\xD - 0.7, -3.1 - 0.275) -- (\xC, -3.1 - 0.275) -- cycle;
+        \node[text=white, anchor=west] at (\xC, -3.1) {\small Stage the file};
+
+        % 4. Remove the file (Unmodified -> Untracked)
+        \draw[fill=arrowbg, draw=none] 
+            (\xB, -4.1 + 0.275) -- (\xA + 0.7, -4.1 + 0.275) -- (\xA + 0.7, -4.1 + 0.425) -- 
+            (\xA, -4.1) -- 
+            (\xA + 0.7, -4.1 - 0.425) -- (\xA + 0.7, -4.1 - 0.275) -- (\xB, -4.1 - 0.275) -- cycle;
+        \node[text=white, anchor=east] at (\xB, -4.1) {\small Remove the file};
+
+        % 5. Commit (Staged -> Unmodified)
+        \draw[fill=arrowbg, draw=none] 
+            (\xD, -5.1 + 0.275) -- (\xB + 0.7, -5.1 + 0.275) -- (\xB + 0.7, -5.1 + 0.425) -- 
+            (\xB, -5.1) -- 
+            (\xB + 0.7, -5.1 - 0.425) -- (\xB + 0.7, -5.1 - 0.275) -- (\xD, -5.1 - 0.275) -- cycle;
+        \node[text=white] at ({(\xB + \xD)/2}, -5.1) {\small Commit};
+
+        \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Files cont.}
+    Before we commit we should inspect the staging area using:
+    \begin{codebox}
+        git status
+    \end{codebox}
+    \pause
+    Once we are happy with the staging area we commit it
+    \begin{codebox}
+        git commit
+    \end{codebox}
+    \pause
+    There are numerous useful options such as
+    \begin{itemize}
+        \item \texttt{-m <msg>}
+        \item \texttt{-S}
+    \end{itemize}
+    Once we've made this commit we can push it to the remote repo using:
+    \begin{codebox}
+        git push
+    \end{codebox}
+
+    \begin{block}{Remark}
+        Filenames in ``.gitignore'' are automatically ignored by git. 
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Removing files}
+    Similarly to add we can remove files from the staging area.
+    \begin{codebox}
+        git rm --cached filename.txt
+    \end{codebox}
+    \pause
+    Or if we want to untrack and remove a file
+    \begin{codebox}
+        git rm filename.txt
+    \end{codebox}
+    \pause
+    \begin{block}{Remark}
+        This doesn't remove the file from the history.
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Commit messages}
+    When writing a commit message make it informative so people can easily see what the commit is about. \\
+    \pause
+    \begin{figure}
+        \caption{Randall Munroe, https://xkcd.com/1296}
+        \centering
+        \includegraphics[width=5cm]{git_commit.png}
+    \end{figure}
+    \pause
+    \begin{block}{Warning}
+        Some classes will mark you down for uninformative commit messages
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{History}
+    To view previous commits run
+    \begin{codebox}
+        git log
+    \end{codebox}
+    \pause
+    Commits are referred to by a sha1 hash, for example 
+    \begin{codebox}
+        d05e2ac13494daf33d26004d52f577bea19c9e52
+    \end{codebox}
+    There are various options to modify the output format, including \texttt{--pretty}.
+    It is displayed using the Unix command \textit{less}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Diff(erence)}
+    \begin{codebox}
+        git diff
+    \end{codebox}
+    This command is used to show the line by line difference between any two commits, or the staging area, or the working directory. \\
+    \pause
+    To see the difference between the latest commit on two different branches
+    \begin{codebox}
+        git diff main some-branch
+    \end{codebox}
+    \pause
+    To see the difference between the current working directory and a commit 
+    \begin{codebox}
+        git diff HEAD
+    \end{codebox}
+    \pause
+    \begin{block}{Remark}
+        \textit{HEAD} is a pointer the latest commit on the current branch
+    \end{block}
+\end{frame}
+
+% Rewrite a commit to remove a junk file and then add it to .gitignore
+
+\begin{frame}[fragile]
+    \frametitle{Rewriting history}
+    There are multiple ways to undo things in Git, but some of these cannot be undone so you may lose work. \\
+    There are four main commands used
+    \pause
+    \begin{itemize}
+        \item \begin{codebox}
+                git reset
+            \end{codebox}
+        \pause
+        \item \begin{codebox}
+                git revert
+            \end{codebox}
+        \pause
+        \item \begin{codebox}
+                git commit --amend
+            \end{codebox}
+        \pause
+        \item \begin{codebox}
+                git checkout
+            \end{codebox}
+    \end{itemize}
+    \pause
+    \begin{block}{Remark}
+        Some classes will mark you down if you include junk files in your repository, this is how you will remove them
+    \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{git reset}
+    \begin{codebox}
+        git reset <commit>
+    \end{codebox}
+    This is used to change the commit which HEAD points to, allowing it to be used to undo commits amount other things. \pause It has three main modes:
+    \begin{itemize}
+        \item \texttt{--soft}. This leaves your working directory unchanged and keeps staged changes. \pause
+        \item \texttt{--mixed}. This leaves your working directory unchanged but unstages changes. \pause
+        \item \texttt{--hard}. This overwrites your working directory and unstages changes, \textbf{meaning you lose any uncommitted changes}. \pause
+    \end{itemize}
+    \begin{codebox}
+        git reset HEAD~5
+    \end{codebox}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{git revert}
+    Git revert makes a new commit that undo the changes made by a individual commit \textit{without deleting} that commit. The \texttt{--no-commit} flag is used to put the changes in the staging area instead of automatically creating a commit. 
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{commit --amand}
+    This command is used to modify the most recent commit, allowing the commit message to be changed and files to be added. However it will completely overwrite the old commit. 
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{git checkout}
+    The git checkout command is used to change branches and restore files in the working tree. 
+    \pause
+    \begin{itemize}
+        \item Switching branches (Typically done with \textit{git switch})\pause
+        \item Creating branches (Typically done with \textit{git switch} or \textit{git branch})\pause
+        \item Navigating to a specific commit \pause
+        \item Restore or revert changes in the working tree \pause
+    \end{itemize}
+    To restore a specific file to the last committed version: 
+    \begin{codebox}
+        git checkout --file.txt
+    \end{codebox}
+    \pause
+    \begin{block}{Remark}
+        A detached HEAD means you are not on any branch
+    \end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Branches}
+    Branches are pointers to specific commits. 
+    \begin{tikzpicture}[
+  font=\ttfamily,
+  >=Stealth,
+  commit/.style={
+    rectangle,
+    rounded corners=12pt,
+    fill=commitbg,
+    text=black,
+    minimum width=2.1cm,
+    minimum height=0.85cm,
+    align=center
+  },
+  branch/.style={
+    rectangle,
+    fill=branchbg,
+    text=white,
+    minimum width=2.1cm,
+    minimum height=0.85cm,
+    align=center
+  },
+  link/.style={
+    ->,
+    line width=0.9pt,
+    color=arrowgray
+  }
+]
+
+  % --- Commit Nodes ---
+  \node[commit] (c0) at (0, 0) {C0};
+  \node[commit] (c1) at (3.1, 0) {C1};
+  \node[commit] (c2) at (6.2, 0) {C2};
+  \node[commit] (c4) at (9.3, 0) {C4};
+  \node[commit] (c3) at (9.3, -1.6) {C3};
+
+  % --- Branch Pointer Nodes ---
+  \node[branch] (master) at (6.2, 1.6) {master};
+  \node[branch] (hotfix) at (9.3, 1.6) {hotfix};
+  \node[branch] (iss53)  at (9.3, -3.2) {iss53};
+
+  % --- Commit History Arrows (pointing to parents) ---
+  \draw[link] (c1) -- (c0);
+  \draw[link] (c2) -- (c1);
+  \draw[link] (c4) -- (c2);
+  \draw[link] (c3) -- (c2);
+
+  % --- Branch Pointer Arrows ---
+  \draw[link] (master) -- (c2);
+  \draw[link] (hotfix) -- (c4);
+  \draw[link] (iss53)  -- (c3);
+
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Git switch}
+    \begin{codebox}
+        git switch <branch>
+    \end{codebox}
+    \pause
+    Git switch is used to switch branches, it is very similar to \textit{git checkout} and was created to alleviate the confusion created by \textit{git checkout}. \\
+    \pause
+    \begin{itemize}
+        \item \textit{-c}: Creates a new branch
+            \pause
+        \item \textit{--discard-changes}, \textit{-f}: Proceed even it the index or the working tree is different from HEAD, i.e. discard changes. 
+            \pause
+        \item \textit{--guess}, \textit{--no-guess}: If the branch is not found but exists in the remote then it fetches that branch. \textit{no-guess} disables this, \textit{guess} is the default. 
+    \end{itemize}
+    
+\begin{frame}[fragile]
+    \frametitle{Merging}
+    Say we want to merge branches iss53 and hotfix to apply the hotfix to our iss53 branch. We would first switch to the iss53 branch (using git checkout iss53) and then run:
+    \begin{codebox}
+        git merge hotfix
+    \end{codebox}
+    \pause
+    If there are merge conflicts we will see an error. To resolve these conflicts we need to manually modify the conflicting files. \\
+    \pause
+    Once the conflicts are resolved stage the changes and continue the merge using: 
+    \begin{codebox}
+        git merge hotfix --continue
+    \end{codebox}
+\end{frame}
+
+\begin{frame}
+    \frametitle{PEP}
+    Thanks to the book Pro Git (second edition) by Scott Chacon and Ben Straub.
+    Thanks to the Honorable Rudransh Kala for something. 
+        \begin{figure}
+        \centering
+        \includegraphics[width=6cm]{pep}
+    \end{figure}
+
+\end{frame}
+
+\end{document}
