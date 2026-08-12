@@ -2,16 +2,25 @@
 
 Welcome to Cybersecurity Sociey Sydney's Git Workshop!
 
+oeiwrjhoiwjt
 What we're covering today:
 
+ewptijowriohroue
 - What is git?
-    - What is a commit?
+
+- What is a commit?
+
 - Creating a git repository
+
 - Git: The Version Control System
-    - Untracked files
-    - Unmodified files
-    - Modified files
-    - Staged files
+
+- Untracked files
+
+- Unmodified files
+
+- Modified files
+
+- Staged files
 - Git: The Collaboration Tool
     - Commit messages
     - History
