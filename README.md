@@ -2,10 +2,10 @@
 
 Welcome to Cybersecurity Sociey Sydney's Git Workshop!
 
-oeiwrjhoiwjt
+Free food and NO DRINKS!
+
 What we're covering today:
 
-ewptijowriohroue
 - What is git?
 
 - What is a commit?
